@@ -1,25 +1,43 @@
-import { ScrollView } from 'react-native';
-import React from 'react';
+import { View, Text, ScrollView } from 'react-native';
 import CategoryCard from './CategoryCard';
+import React, { useState, useEffect } from 'react';
+import SanityClient, { urlFor } from '../sanity';
 
 export default function Categories() {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    SanityClient.fetch(
+      `
+      *[_type == 'categories']
+    `
+    ).then((data) => {
+      setCategories(data);
+    });
+  }, []);
+
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      <CategoryCard imgUrl='https://i.redd.it/6n8x4rsosrr21.png' title='OwO' />
-      <CategoryCard
-        imgUrl='https://res.cloudinary.com/teepublic/image/private/s--0Sx6hF2F--/t_Preview/b_rgb:ffffff,c_limit,f_auto,h_630,q_90,w_630/v1536528878/production/designs/3131893_0.jpg'
-        title='UwU'
-      />
-      <CategoryCard imgUrl='https://i.redd.it/6n8x4rsosrr21.png' title='OwO' />
-      <CategoryCard
-        imgUrl='https://res.cloudinary.com/teepublic/image/private/s--0Sx6hF2F--/t_Preview/b_rgb:ffffff,c_limit,f_auto,h_630,q_90,w_630/v1536528878/production/designs/3131893_0.jpg'
-        title='UwU'
-      />
-      <CategoryCard imgUrl='https://i.redd.it/6n8x4rsosrr21.png' title='OwO' />
-      <CategoryCard
-        imgUrl='https://res.cloudinary.com/teepublic/image/private/s--0Sx6hF2F--/t_Preview/b_rgb:ffffff,c_limit,f_auto,h_630,q_90,w_630/v1536528878/production/designs/3131893_0.jpg'
-        title='UwU'
-      />
+    // {restaurants?.map((restaurant) => (
+
+    // ))}
+    <ScrollView
+      contentContainerStyle={{
+        paddingHorizontal: 15,
+        paddingTop: 10
+      }}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+    >
+      {categories?.map((category) => {
+        category.image && (
+          <CategoryCard
+            key={category._id}
+            imgUrl={urlFor(category.image).width(200).url()}
+            title={category.name}
+            alt='xd'
+          />
+        );
+      })}
     </ScrollView>
   );
 }
